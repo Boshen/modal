@@ -1,7 +1,7 @@
 # Modal
 
 * See [source](./src/modal.ts) for modal options and methods
-* See [example]('/example/index.ts) for usage
+* See [example](/example/index.ts) for usage
 
 # Usage
 ```
