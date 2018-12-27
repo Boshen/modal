@@ -11,15 +11,17 @@ export interface ModalProps {
 const noop = () => {}
 
 export class Modal {
-  private content: HTMLElement
-  private modal: HTMLElement
-  private overlay: HTMLElement
-  private closeOnOverlay: boolean
-  private zIndex: number
-  private useKeyboard: boolean
-  private onClickModal: ((e: MouseEvent, modal: Modal) => void)
-  private onShowModal: ((modal: Modal) => void)
-  private onCloseModal: ((modal: Modal) => void)
+  private static numberOfModalsShown: number = 0
+
+  private readonly content: HTMLElement
+  private readonly modal: HTMLElement
+  private readonly overlay: HTMLElement
+  private readonly closeOnOverlay: boolean
+  private readonly zIndex: number
+  private readonly useKeyboard: boolean
+  private readonly onClickModal: ((e: MouseEvent, modal: Modal) => void)
+  private readonly onShowModal: ((modal: Modal) => void)
+  private readonly onCloseModal: ((modal: Modal) => void)
 
   constructor({
     content,
@@ -43,11 +45,13 @@ export class Modal {
   }
 
   public show() {
+    Modal.numberOfModalsShown += 1
     this.showModal()
     this.addEventListeners()
   }
 
   public close() {
+    Modal.numberOfModalsShown -= 1
     this.removeEventListeners()
     this.closeModal()
   }
@@ -101,7 +105,7 @@ export class Modal {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,.6);
+      background: ${Modal.numberOfModalsShown === 1 ? 'rgba(0,0,0,.6)' : 'default'};
       display: flex;
       justify-content: center;
       align-items: center;
@@ -137,7 +141,13 @@ export class Modal {
 
   private toggleBodyScroll(showScroll: boolean) {
     const body = document.querySelector('body')!
-    body.style.overflow = showScroll ? null : 'hidden'
-    body.style.paddingRight = showScroll ? null : '15px'
+    if (!showScroll && Modal.numberOfModalsShown === 1) {
+      body.style.overflow = 'hidden'
+      body.style.paddingRight = '15px'
+    }
+    if (showScroll && Modal.numberOfModalsShown === 0) {
+      body.style.overflow = null
+      body.style.paddingRight = null
+    }
   }
 }

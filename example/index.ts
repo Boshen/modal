@@ -1,22 +1,25 @@
 import { Modal, ModalProps } from '../src'
 
-const create = (modalStyle: string, modalHtml: string, buttonText: string, modalOptions: Partial<ModalProps> = {}) => {
+const createModal = (modalStyle: string, modalHtml: string, modalOptions: Partial<ModalProps> = {}) => {
   const modalContent = document.createElement('div')
   modalContent.setAttribute('style', modalStyle)
   modalContent.innerHTML = modalHtml
-  const button = document.createElement('button')
-  document.body.appendChild(button)
-  button.innerText = buttonText
-  const modal = new Modal({
+  return new Modal({
     content: modalContent,
     onShow: (m: Modal) => console.info('modal shown', m),
     onClose: (m: Modal) => console.info('modal closed', m),
     ...modalOptions,
   })
+}
+
+const createButton = (modal: Modal, buttonText: string) => {
+  const button = document.createElement('button')
+  document.body.appendChild(button)
+  button.innerText = buttonText
   button.onclick = () => modal.show()
 }
 
-create(
+const modal1 = createModal(
   `
     padding: 30px;
     width: 500px;
@@ -32,7 +35,6 @@ create(
       <div>Modal Body</div>
     </div>
     `,
-  'Basic Modal',
   {
     zIndex: 3000,
     onClick: (e: MouseEvent, modal: Modal) => {
@@ -44,8 +46,9 @@ create(
     },
   }
 )
+createButton(modal1, 'Basic Modal')
 
-create(
+const modal2 = createModal(
   `
     padding: 30px;
     width: 500px;
@@ -55,11 +58,11 @@ create(
       <h1>Scroll Modal</h1>
       <div>Scroll Modal Body</div>
     </div>
-    `,
-  'Scroll Modal'
+    `
 )
+createButton(modal2, 'Basic Modal')
 
-create(
+const modal3 = createModal(
   `
     padding: 30px;
     width: 500px;
@@ -74,7 +77,6 @@ create(
       </div>
     </div>
     `,
-  'Confirm Modal',
   {
     closeOnOverlay: false,
     useKeyboard: false,
@@ -91,3 +93,34 @@ create(
     },
   }
 )
+createButton(modal3, 'Confirm Modal')
+
+const modalInModal = (n: number) => {
+  return createModal(
+    `
+      padding: 30px;
+      width: 500px;
+      height: ${n * 100 + 300}px;
+      `,
+    `
+      <div>
+        <h1>Modal Over Modal ${n}</h1>
+        <div>
+          <button data-modal-new>another modal</button>
+        </div>
+      </div>
+      `,
+    {
+      onClick: (e: MouseEvent) => {
+        const target = e.target as HTMLElement
+        if ('modalNew' in target.dataset) {
+          console.info('create modal modal')
+          const modal = modalInModal(n + 1)
+          modal.show()
+        }
+      },
+    }
+  )
+}
+
+createButton(modalInModal(0), 'Modal Over Modal')
