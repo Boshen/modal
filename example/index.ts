@@ -1,28 +1,42 @@
 import { Modal } from '../src'
 
-const button = document.getElementById('modal-button')
+const create = (modalStyle: string, modalHtml: string, buttonText: string) => {
+  const modalContent = document.createElement('div')
+  modalContent.setAttribute('style', modalStyle)
+  modalContent.innerHTML = modalHtml
+  const button = document.createElement('button')
+  document.body.appendChild(button)
+  button.innerText = buttonText
+  const modal = new Modal({ content: modalContent })
+  button.onclick = () => modal.show()
+}
 
-const modalContent = document.createElement('div')
-modalContent.setAttribute(
-  'style',
+create(
   `
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: 30px;
-  max-width: 500px;
-  border-radius: 1px;
-`,
+    padding: 30px;
+    width: 500px;
+    height: 300px;
+    border-radius: 3px;
+    `,
+  `
+    <div>
+      <h1>Modal Title</h1>
+      <div>Modal Body</div>
+    </div>
+    `,
+  'Basic Modal',
 )
 
-modalContent.innerHTML = `
-  <div>
-    <h1>Modal Title</h1>
-    <div>Modal Body</div>
-  </div>
-`
-
-const modal1 = new Modal({
-  content: modalContent,
-})
-
-button!.onclick = () => modal1.show()
+create(
+  `
+    padding: 30px;
+    width: 500px;
+    `,
+  `
+    <div style="height: 150vh">
+      <h1>Scroll Modal Title</h1>
+      <div>Scroll Modal Body</div>
+    </div>
+    `,
+  'Scroll Modal',
+)

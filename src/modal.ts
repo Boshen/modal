@@ -14,13 +14,13 @@ export class Modal {
   }
 
   public show() {
-    this.createModal()
+    this.showModal()
     this.addEventListeners()
   }
 
   public close() {
     this.removeEventListeners()
-    this.modal.remove()
+    this.closeModal()
   }
 
   private addEventListeners() {
@@ -45,7 +45,7 @@ export class Modal {
     }
   }
 
-  private createModal() {
+  private showModal() {
     document.body.appendChild(this.modal)
     const container = document.createElement('div')
 
@@ -71,8 +71,31 @@ export class Modal {
       'style',
       `
       background-color: #fff;
-      max-height: 100vh;
+      max-height: 80vh;
+      overflow-y: auto;
     `,
     )
+
+    this.toggleBodyScroll(false)
+    this.modal.style.transition = 'opacity .3s ease-out'
+    this.modal.style.opacity = '0'
+    window.setTimeout(() => {
+      this.modal.style.opacity = '1'
+    }, 1)
+  }
+
+  private closeModal() {
+    this.modal.style.transition = 'opacity .15s ease-in'
+    this.modal.style.opacity = '0'
+    window.setTimeout(() => {
+      this.toggleBodyScroll(true)
+      this.modal.remove()
+    }, 150)
+  }
+
+  private toggleBodyScroll(showScroll: boolean) {
+    const body = document.querySelector('body')!
+    body.style.overflow = showScroll ? null : 'hidden'
+    body.style.paddingRight = showScroll ? null : '15px'
   }
 }
