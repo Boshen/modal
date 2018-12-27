@@ -1,0 +1,8 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-eslint-rules", "tslint-sonarts"],
+  "rules": {
+    "semicolon": [true, "never"],
+    "quotemark": [true, "single"]
+  }
+}
