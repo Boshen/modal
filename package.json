@@ -8,10 +8,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c -w",
-    "dev": "npm-run-all --parallel start watch",
-    "start": "serve public"
+    "build": "yarn && rollup --config rollup.build.js",
+    "dev": "rollup --watch --config rollup.dev.js",
+    "serve": "serve example",
+    "watch": "yarn && npm-run-all --parallel serve dev"
   },
   "dependencies": {},
   "devDependencies": {

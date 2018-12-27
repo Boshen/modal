@@ -4,14 +4,8 @@ export default {
   input: 'src/index.ts',
 
   output: {
-    file: 'public/bundle.js',
-    name: 'modal',
-    format: 'iife',
-    sourcemap: true,
-  },
-
-  watch: {
-    include: 'src/**',
+    file: 'lib/index.js',
+    format: 'cjs',
   },
 
   plugins: [typescript()],
