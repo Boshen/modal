@@ -11,7 +11,7 @@ export interface ModalProps {
 const noop = () => {}
 
 export class Modal {
-  private static numberOfModalsOpened: number = 0
+  private static modalsOpened: Modal[] = []
 
   private readonly content: HTMLElement
   private readonly closeOnOverlay: boolean
@@ -57,7 +57,7 @@ export class Modal {
    * Open the modal
    */
   public open() {
-    Modal.numberOfModalsOpened += 1
+    Modal.modalsOpened.push(this)
     this.openModal()
     this.addEventListeners()
   }
@@ -66,7 +66,7 @@ export class Modal {
    * Close the modal
    */
   public close() {
-    Modal.numberOfModalsOpened -= 1
+    Modal.modalsOpened.pop()
     this.removeEventListeners()
     this.closeModal()
   }
@@ -87,7 +87,7 @@ export class Modal {
 
   private handleEsc = (e: KeyboardEvent) => {
     if (e.keyCode === 27) {
-      this.close()
+      Modal.modalsOpened[Modal.modalsOpened.length - 1].close()
     }
   }
 
@@ -122,7 +122,7 @@ export class Modal {
       left: 0;
       right: 0;
       bottom: 0;
-      background: ${Modal.numberOfModalsOpened === 1 ? 'rgba(0,0,0,.6)' : 'default'};
+      background: ${Modal.modalsOpened.length === 1 ? 'rgba(0,0,0,.6)' : 'default'};
       display: flex;
       justify-content: center;
       align-items: center;
@@ -161,11 +161,11 @@ export class Modal {
 
   private toggleBodyScroll(openScroll: boolean) {
     const body = document.querySelector('body')!
-    if (!openScroll && Modal.numberOfModalsOpened === 1) {
+    if (!openScroll && Modal.modalsOpened.length === 1) {
       body.style.overflow = 'hidden'
       body.style.paddingRight = '15px'
     }
-    if (openScroll && Modal.numberOfModalsOpened === 0) {
+    if (openScroll && Modal.modalsOpened.length === 0) {
       body.style.overflow = null
       body.style.paddingRight = null
     }
