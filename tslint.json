@@ -1,9 +1,12 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint:recommended", "tslint-eslint-rules", "tslint-sonarts"],
+  "extends": ["tslint:recommended", "tslint-eslint-rules", "tslint-sonarts", "tslint-config-prettier"],
   "rules": {
-    "semicolon": [true, "never"],
+    "no-console": [true, "log", "time", "trace"],
+    "interface-name": [true, "never-prefix"],
+    "no-empty": false,
     "quotemark": [true, "single"],
-    "interface-name": [true, "never-prefix"]
+    "semicolon": [true, "never"],
+    "object-literal-sort-keys": false
   }
 }

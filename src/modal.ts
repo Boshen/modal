@@ -1,14 +1,43 @@
 export interface ModalProps {
   content: HTMLElement
+  zIndex?: number
+  closeOnOverlay?: boolean
+  useKeyboard?: boolean
+  onShow?: (modal: Modal) => void
+  onClose?: (modal: Modal) => void
+  onClick?: (e: MouseEvent, modal: Modal) => void
 }
+
+const noop = () => {}
 
 export class Modal {
   private content: HTMLElement
   private modal: HTMLElement
   private overlay: HTMLElement
+  private closeOnOverlay: boolean
+  private zIndex: number
+  private useKeyboard: boolean
+  private onClickModal: ((e: MouseEvent, modal: Modal) => void)
+  private onShowModal: ((modal: Modal) => void)
+  private onCloseModal: ((modal: Modal) => void)
 
-  constructor({ content }: ModalProps) {
+  constructor({
+    content,
+    closeOnOverlay = true,
+    zIndex = 1000,
+    useKeyboard = true,
+    onClick = noop,
+    onShow = noop,
+    onClose = noop,
+  }: ModalProps) {
     this.content = content
+    this.closeOnOverlay = closeOnOverlay
+    this.zIndex = zIndex
+    this.useKeyboard = useKeyboard
+    this.onClickModal = onClick
+    this.onShowModal = onShow
+    this.onCloseModal = onClose
+
     this.modal = document.createElement('div')
     this.overlay = document.createElement('div')
   }
@@ -24,13 +53,17 @@ export class Modal {
   }
 
   private addEventListeners() {
-    this.overlay.addEventListener('click', this.handleOverlayClick)
-    document.addEventListener('keydown', this.handleEsc)
+    this.modal.addEventListener('click', this.handleClick)
+    if (this.useKeyboard) {
+      document.addEventListener('keydown', this.handleEsc)
+    }
   }
 
   private removeEventListeners() {
-    this.overlay.removeEventListener('click', this.handleOverlayClick)
-    document.removeEventListener('keydown', this.handleEsc)
+    this.modal.removeEventListener('click', this.handleClick)
+    if (this.useKeyboard) {
+      document.removeEventListener('keydown', this.handleEsc)
+    }
   }
 
   private handleEsc = (e: KeyboardEvent) => {
@@ -39,20 +72,27 @@ export class Modal {
     }
   }
 
-  private handleOverlayClick = (e: MouseEvent) => {
-    if (e.target === e.currentTarget) {
+  private handleClick = (e: MouseEvent) => {
+    this.onClickModal(e, this)
+    if (e.target === this.overlay && this.closeOnOverlay) {
       this.close()
     }
   }
 
   private showModal() {
-    document.body.appendChild(this.modal)
     const container = document.createElement('div')
 
+    document.body.appendChild(this.modal)
     this.modal.appendChild(this.overlay)
     this.overlay.appendChild(container)
     container.appendChild(this.content)
 
+    this.modal.setAttribute(
+      'style',
+      `
+      z-index: ${this.zIndex}
+      `
+    )
     this.overlay.setAttribute(
       'style',
       `
@@ -65,7 +105,7 @@ export class Modal {
       display: flex;
       justify-content: center;
       align-items: center;
-    `,
+    `
     )
     container.setAttribute(
       'style',
@@ -73,7 +113,7 @@ export class Modal {
       background-color: #fff;
       max-height: 80vh;
       overflow-y: auto;
-    `,
+    `
     )
 
     this.toggleBodyScroll(false)
@@ -81,6 +121,7 @@ export class Modal {
     this.modal.style.opacity = '0'
     window.setTimeout(() => {
       this.modal.style.opacity = '1'
+      this.onShowModal(this)
     }, 1)
   }
 
@@ -90,6 +131,7 @@ export class Modal {
     window.setTimeout(() => {
       this.toggleBodyScroll(true)
       this.modal.remove()
+      this.onCloseModal(this)
     }, 150)
   }
 
