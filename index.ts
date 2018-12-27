@@ -62,11 +62,11 @@ const modal2 = createModal(
   `
     <div style="height: 150vh">
       <h1>Scroll Modal</h1>
-      <div>Scroll Modal Body</div>
+      <div>Notice the page scroll is hidden away, and the page doesn't shake.</div>
     </div>
     `
 )
-createButton(modal2, 'Basic Modal')
+createButton(modal2, 'Scroll Modal')
 
 /**
  * Confirm modal all close options all turned off (esc and clicking on overlay)
@@ -79,7 +79,7 @@ const modal3 = createModal(
   `
     <div>
       <h1>Confirm Modal</h1>
-      <div style="height:150px">Alert Modal Body</div>
+      <div style="height:150px">Notice all closing methods are turned off (clicking overlay or hitting esc) </div>
       <div>
         <button data-modal-confirm>Confirm</button>
         <button data-modal-cancel>Cancel</button>

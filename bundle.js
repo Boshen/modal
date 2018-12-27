@@ -181,12 +181,12 @@
     /**
      * Modal content needs a scroll
      */
-    var modal2 = createModal("\n    padding: 30px;\n    width: 500px;\n    ", "\n    <div style=\"height: 150vh\">\n      <h1>Scroll Modal</h1>\n      <div>Scroll Modal Body</div>\n    </div>\n    ");
-    createButton(modal2, 'Basic Modal');
+    var modal2 = createModal("\n    padding: 30px;\n    width: 500px;\n    ", "\n    <div style=\"height: 150vh\">\n      <h1>Scroll Modal</h1>\n      <div>Notice the page scroll is hidden away, and the page doesn't shake.</div>\n    </div>\n    ");
+    createButton(modal2, 'Scroll Modal');
     /**
      * Confirm modal all close options all turned off (esc and clicking on overlay)
      */
-    var modal3 = createModal("\n    padding: 30px;\n    width: 500px;\n    ", "\n    <div>\n      <h1>Confirm Modal</h1>\n      <div style=\"height:150px\">Alert Modal Body</div>\n      <div>\n        <button data-modal-confirm>Confirm</button>\n        <button data-modal-cancel>Cancel</button>\n      </div>\n    </div>\n    ", {
+    var modal3 = createModal("\n    padding: 30px;\n    width: 500px;\n    ", "\n    <div>\n      <h1>Confirm Modal</h1>\n      <div style=\"height:150px\">Notice all closing methods are turned off (clicking overlay or hitting esc) </div>\n      <div>\n        <button data-modal-confirm>Confirm</button>\n        <button data-modal-cancel>Cancel</button>\n      </div>\n    </div>\n    ", {
         closeOnOverlay: false,
         useKeyboard: false,
         onClick: function (e, modal) {
