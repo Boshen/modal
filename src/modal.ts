@@ -3,7 +3,7 @@ export interface ModalProps {
   zIndex?: number
   closeOnOverlay?: boolean
   useKeyboard?: boolean
-  onShow?: (modal: Modal) => void
+  onOpen?: (modal: Modal) => void
   onClose?: (modal: Modal) => void
   onClick?: (e: MouseEvent, modal: Modal) => void
 }
@@ -11,25 +11,37 @@ export interface ModalProps {
 const noop = () => {}
 
 export class Modal {
-  private static numberOfModalsShown: number = 0
+  private static numberOfModalsOpened: number = 0
 
   private readonly content: HTMLElement
-  private readonly modal: HTMLElement
-  private readonly overlay: HTMLElement
   private readonly closeOnOverlay: boolean
   private readonly zIndex: number
   private readonly useKeyboard: boolean
   private readonly onClickModal: ((e: MouseEvent, modal: Modal) => void)
-  private readonly onShowModal: ((modal: Modal) => void)
+  private readonly onOpenModal: ((modal: Modal) => void)
   private readonly onCloseModal: ((modal: Modal) => void)
 
+  private modal: HTMLElement | null = null
+  private overlay: HTMLElement | null = null
+
+  /**
+   * Create a Modal, the modal is not opened yet
+   * @param {HTMLElement} content - the html content inside the modal
+   * @param {boolean} [closeOnOverlay=true] - close the modal if the overflay is clicked
+   * @param {boolean} [zIndex=1000] - z index of the modal
+   * @param {boolean} [useKeyboard=true] - handle keyboard events (esc will close the modal)
+   * @param {clickModalCallback} [onClick] - callback for mouse events on the modal
+   * @param {modalCallback} [onOpen] - callback when the modal is opened
+   * @param {modalCallback} [onClose] - callback when the modal is closed
+   *
+   */
   constructor({
     content,
     closeOnOverlay = true,
     zIndex = 1000,
     useKeyboard = true,
     onClick = noop,
-    onShow = noop,
+    onOpen = noop,
     onClose = noop,
   }: ModalProps) {
     this.content = content
@@ -37,34 +49,37 @@ export class Modal {
     this.zIndex = zIndex
     this.useKeyboard = useKeyboard
     this.onClickModal = onClick
-    this.onShowModal = onShow
+    this.onOpenModal = onOpen
     this.onCloseModal = onClose
-
-    this.modal = document.createElement('div')
-    this.overlay = document.createElement('div')
   }
 
-  public show() {
-    Modal.numberOfModalsShown += 1
-    this.showModal()
+  /**
+   * Open the modal
+   */
+  public open() {
+    Modal.numberOfModalsOpened += 1
+    this.openModal()
     this.addEventListeners()
   }
 
+  /**
+   * Close the modal
+   */
   public close() {
-    Modal.numberOfModalsShown -= 1
+    Modal.numberOfModalsOpened -= 1
     this.removeEventListeners()
     this.closeModal()
   }
 
   private addEventListeners() {
-    this.modal.addEventListener('click', this.handleClick)
+    this.modal!.addEventListener('click', this.handleClick)
     if (this.useKeyboard) {
       document.addEventListener('keydown', this.handleEsc)
     }
   }
 
   private removeEventListeners() {
-    this.modal.removeEventListener('click', this.handleClick)
+    this.modal!.removeEventListener('click', this.handleClick)
     if (this.useKeyboard) {
       document.removeEventListener('keydown', this.handleEsc)
     }
@@ -83,7 +98,9 @@ export class Modal {
     }
   }
 
-  private showModal() {
+  private openModal() {
+    this.modal = document.createElement('div')
+    this.overlay = document.createElement('div')
     const container = document.createElement('div')
 
     document.body.appendChild(this.modal)
@@ -105,7 +122,7 @@ export class Modal {
       left: 0;
       right: 0;
       bottom: 0;
-      background: ${Modal.numberOfModalsShown === 1 ? 'rgba(0,0,0,.6)' : 'default'};
+      background: ${Modal.numberOfModalsOpened === 1 ? 'rgba(0,0,0,.6)' : 'default'};
       display: flex;
       justify-content: center;
       align-items: center;
@@ -124,30 +141,46 @@ export class Modal {
     this.modal.style.transition = 'opacity .3s ease-out'
     this.modal.style.opacity = '0'
     window.setTimeout(() => {
-      this.modal.style.opacity = '1'
-      this.onShowModal(this)
+      this.modal!.style.opacity = '1'
+      this.onOpenModal(this)
     }, 1)
   }
 
   private closeModal() {
+    if (!this.modal) {
+      return
+    }
     this.modal.style.transition = 'opacity .15s ease-in'
     this.modal.style.opacity = '0'
     window.setTimeout(() => {
       this.toggleBodyScroll(true)
-      this.modal.remove()
+      this.modal!.remove()
       this.onCloseModal(this)
     }, 150)
   }
 
-  private toggleBodyScroll(showScroll: boolean) {
+  private toggleBodyScroll(openScroll: boolean) {
     const body = document.querySelector('body')!
-    if (!showScroll && Modal.numberOfModalsShown === 1) {
+    if (!openScroll && Modal.numberOfModalsOpened === 1) {
       body.style.overflow = 'hidden'
       body.style.paddingRight = '15px'
     }
-    if (showScroll && Modal.numberOfModalsShown === 0) {
+    if (openScroll && Modal.numberOfModalsOpened === 0) {
       body.style.overflow = null
       body.style.paddingRight = null
     }
   }
 }
+
+/**
+ * The callback for when the modal is clicked
+ * @callback clickModalCallback
+ * @param {MouseEvent} event - the mouse event
+ * @param {Modal} modal - the modal itself
+ */
+
+/**
+ * The callback for modal events
+ * @callback modalCallback
+ * @param {Modal} modal - the modal itself
+ */

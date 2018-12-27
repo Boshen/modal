@@ -6,7 +6,7 @@ const createModal = (modalStyle: string, modalHtml: string, modalOptions: Partia
   modalContent.innerHTML = modalHtml
   return new Modal({
     content: modalContent,
-    onShow: (m: Modal) => console.info('modal shown', m),
+    onOpen: (m: Modal) => console.info('modal open', m),
     onClose: (m: Modal) => console.info('modal closed', m),
     ...modalOptions,
   })
@@ -16,9 +16,12 @@ const createButton = (modal: Modal, buttonText: string) => {
   const button = document.createElement('button')
   document.body.appendChild(button)
   button.innerText = buttonText
-  button.onclick = () => modal.show()
+  button.onclick = () => modal.open()
 }
 
+/**
+ * Simple Modal with a close icon
+ */
 const modal1 = createModal(
   `
     padding: 30px;
@@ -48,6 +51,9 @@ const modal1 = createModal(
 )
 createButton(modal1, 'Basic Modal')
 
+/**
+ * Modal content needs a scroll
+ */
 const modal2 = createModal(
   `
     padding: 30px;
@@ -62,6 +68,9 @@ const modal2 = createModal(
 )
 createButton(modal2, 'Basic Modal')
 
+/**
+ * Confirm modal all close options all turned off (esc and clicking on overlay)
+ */
 const modal3 = createModal(
   `
     padding: 30px;
@@ -95,6 +104,9 @@ const modal3 = createModal(
 )
 createButton(modal3, 'Confirm Modal')
 
+/*
+ * Creating new modals in side modals
+ */
 const modalInModal = (n: number) => {
   return createModal(
     `
@@ -116,7 +128,7 @@ const modalInModal = (n: number) => {
         if ('modalNew' in target.dataset) {
           console.info('create modal modal')
           const modal = modalInModal(n + 1)
-          modal.show()
+          modal.open()
         }
       },
     }
