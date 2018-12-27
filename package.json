@@ -11,10 +11,12 @@
     "build": "yarn && rollup --config rollup.build.js",
     "dev": "rollup --watch --config rollup.dev.js",
     "serve": "serve example",
-    "watch": "yarn && npm-run-all --parallel serve dev"
+    "watch": "yarn && npm-run-all --parallel serve dev",
+    "deploy": "rollup --config rollup.dev.js && gh-pages -d example"
   },
   "dependencies": {},
   "devDependencies": {
+    "gh-pages": "^2.0.1",
     "husky": "^1.2.1",
     "lint-staged": "^8.1.0",
     "npm-run-all": "^4.1.5",
